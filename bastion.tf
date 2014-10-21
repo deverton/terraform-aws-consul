@@ -1,6 +1,6 @@
 ##
 # Create a bastion host to allow SSH in to the test network.
-# Connections are only allowed from Wotif networks.
+# Connections are only allowed from ${var.allowed_network}
 # This box also acts as a NAT for the private network
 ##
 
