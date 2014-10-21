@@ -6,7 +6,7 @@
 
 resource "aws_security_group" "bastion" {
     name = "bastion"
-    description = "Allow SSH from Wotif, Consul, and NAT internal traffic"
+    description = "Allow access from allowed_network to SSH/Consul, and NAT internal traffic"
     vpc_id = "${aws_vpc.test.id}"
 
     # SSH
