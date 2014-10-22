@@ -67,6 +67,6 @@ resource "aws_instance" "consul" {
         role = "dns"
         environment = "test"
     }
-    user_data = "${file(\"files/consul/install-server.sh\")}"
+    user_data = "${file(\"files/consul/cloud-init.txt\")}"
 }
 

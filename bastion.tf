@@ -76,7 +76,7 @@ resource "aws_instance" "bastion" {
     subnet_id = "${aws_subnet.dmz.id}"
     associate_public_ip_address = true
     source_dest_check = false
-    user_data = "${file(\"files/bastion/cloud-config.yaml\")}"
+    user_data = "${file(\"files/bastion/cloud-init.txt\")}"
 
     provisioner "file" {
         source = "files/bastion/haproxy.cfg"
