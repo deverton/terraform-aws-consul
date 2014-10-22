@@ -2,3 +2,4 @@ terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
 *.tfplan
+files/*/cloud-init.txt
