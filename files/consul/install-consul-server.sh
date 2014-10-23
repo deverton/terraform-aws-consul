@@ -18,6 +18,20 @@ mv dist/* /mnt/consul/ui/
 rm /tmp/consul.zip
 rm /tmp/consul-ui.zip
 
+# Configuration file
+echo "Creating configuration..."
+cat >/etc/consul.d/config.json << EOF
+{
+    "client_addr"                 : "0.0.0.0",
+    "recursor"                    : "127.0.0.1",
+    "disable_anonymous_signature" : true,
+    "disable_update_check"        : true,
+    "data_dir"                    : "/mnt/consul/data",
+    "ui_dir"                      : "/mnt/consul/ui"
+}
+EOF
+chmod 0644 /etc/consul.d/config.json
+
 # Setup the join address
 echo "Configure IPs..."
 cat >/etc/service/consul-join << EOF
@@ -28,7 +42,7 @@ chmod 0644 /etc/service/consul-join
 # Configure the server
 echo "Configure server..."
 cat >/etc/service/consul << EOF
-export CONSUL_FLAGS="-server -bootstrap-expect=3 -data-dir=/mnt/consul/data -ui-dir=/mnt/consul/ui -client=0.0.0.0"
+export CONSUL_FLAGS="-server -bootstrap-expect=3"
 EOF
 chmod 0644 /etc/service/consul
 
