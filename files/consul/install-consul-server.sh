@@ -22,8 +22,10 @@ rm /tmp/consul-ui.zip
 echo "Creating configuration..."
 cat >/etc/consul.d/config.json << EOF
 {
-    "client_addr"                 : "0.0.0.0",
-    "recursor"                    : "127.0.0.1",
+    "ports"                       : {
+        "dns" : 53
+    },
+    "recursor"                    : "10.0.0.2",
     "disable_anonymous_signature" : true,
     "disable_update_check"        : true,
     "data_dir"                    : "/mnt/consul/data",
