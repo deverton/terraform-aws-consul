@@ -18,15 +18,6 @@ resource "aws_security_group" "bastion" {
         self = false
     }
 
-    # HAProxy Stats
-    ingress = {
-        from_port = 1936
-        to_port = 1936
-        protocol = "tcp"
-        cidr_blocks = [ "${var.allowed_network}" ]
-        self = false
-    }
-
     # Consul
     ingress = {
         from_port = 8500
@@ -77,19 +68,6 @@ resource "aws_instance" "bastion" {
     associate_public_ip_address = true
     source_dest_check = false
     user_data = "${file(\"files/bastion/cloud-init.txt\")}"
-
-    provisioner "file" {
-        source = "files/bastion/haproxy.cfg"
-        destination = "/home/ec2-user/haproxy.cfg"
-    }
-
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mv /home/ec2-user/haproxy.cfg /etc/haproxy/haproxy.cfg",
-            "sudo service haproxy restart"
-        ]
-    }
-
     tags = {
         Name = "bastion"
         subnet = "dmz"

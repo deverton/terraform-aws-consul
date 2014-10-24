@@ -5,7 +5,7 @@ TARGETS   := $(addsuffix /cloud-init.txt,$(HOST_DIRS))
 all: $(TARGETS)
 
 define make-goal
-$1/cloud-init.txt: $(wildcard $1/*.yaml) $(wildcard $1/*.sh)
+$1/cloud-init.txt: $(wildcard files/common/*.sh) $(wildcard $1/*.yaml) $(wildcard $1/*.sh)
 endef
 
 $(foreach hdir,$(HOST_DIRS),$(eval $(call make-goal,$(hdir))))
@@ -19,8 +19,12 @@ plan: $(TARGETS)
 apply: $(TARGETS)
 	terraform $@
 
+destroy:
+	terraform plan -destroy -out=destroy.tfplan
+	terraform apply destroy.tfplan
+
 clean:
 	rm $(TARGETS)
 
-.PHONY: all plan apply clean
+.PHONY: all plan apply clean destroy
 

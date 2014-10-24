@@ -2,5 +2,5 @@
 write_files:
     - path: /etc/terraform_environment
       content: |
-          ROLE="bastion consul-ui"
+          ROLE="consul-server"
 

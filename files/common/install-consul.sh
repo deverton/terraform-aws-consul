@@ -1,27 +1,53 @@
 #!/bin/bash
 set -e
 
-echo "Fetching Consul..."
-cd /tmp
-wget https://dl.bintray.com/mitchellh/consul/0.4.1_linux_amd64.zip -O consul.zip
-wget https://dl.bintray.com/mitchellh/consul/0.4.1_web_ui.zip -O consul-ui.zip
+source /etc/terraform_environment
+
+SERVER_ARGS=""
+UI_DIR="null"
+HTTP_CLIENT_ADDR="127.0.0.1"
 
 echo "Installing Consul..."
+pushd /tmp
+wget https://dl.bintray.com/mitchellh/consul/0.4.1_linux_amd64.zip -O consul.zip
 unzip consul.zip >/dev/null
 chmod +x consul
 mv consul /usr/local/bin/consul
 mkdir -p /etc/consul.d
-mkdir -p /mnt/consul/{data,ui}
+mkdir -p /mnt/consul/data
 mkdir -p /etc/service
-unzip consul-ui.zip >/dev/null
-mv dist/* /mnt/consul/ui/
 rm /tmp/consul.zip
-rm /tmp/consul-ui.zip
+popd
+
+if [[ "${ROLE}" == *consul-server* ]]; then
+    echo "Configure as Consul Server..."
+
+    SERVER_ARGS="-server -bootstrap-expect=3"
+else
+    echo "Configure as Consul Client..."
+fi
+
+if [[ "${ROLE}" == *consul-ui* ]]; then
+    echo "Installing Consul UI..."
+    pushd /tmp
+    wget https://dl.bintray.com/mitchellh/consul/0.4.1_web_ui.zip -O consul-ui.zip
+    unzip consul-ui.zip >/dev/null
+    mkdir -p /mnt/consul/ui
+    mv dist/* /mnt/consul/ui/
+    rm /tmp/consul-ui.zip
+    popd
+
+    HTTP_CLIENT_ADDR="0.0.0.0"
+    UI_DIR="\"/mnt/consul/ui\""
+fi
 
 # Configuration file
 echo "Creating configuration..."
 cat >/etc/consul.d/config.json << EOF
 {
+    "addresses"                   : {
+        "http" : "${HTTP_CLIENT_ADDR}"
+    },
     "ports"                       : {
         "dns" : 53
     },
@@ -29,7 +55,7 @@ cat >/etc/consul.d/config.json << EOF
     "disable_anonymous_signature" : true,
     "disable_update_check"        : true,
     "data_dir"                    : "/mnt/consul/data",
-    "ui_dir"                      : "/mnt/consul/ui"
+    "ui_dir"                      : $UI_DIR
 }
 EOF
 chmod 0644 /etc/consul.d/config.json
@@ -44,7 +70,7 @@ chmod 0644 /etc/service/consul-join
 # Configure the server
 echo "Configure server..."
 cat >/etc/service/consul << EOF
-export CONSUL_FLAGS="-server -bootstrap-expect=3"
+export CONSUL_FLAGS="${SERVER_ARGS}"
 EOF
 chmod 0644 /etc/service/consul
 
