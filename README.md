@@ -1,6 +1,6 @@
 # Terraform AWS Test Environment
 
-This is an experimentthat creates a test environment subset in a VPC in AWS. The default region is ```us-west-2```. It creates three subnets DMZ, Public, Private and installs a bastion box in DMZ to allow access to the other subnets. It also installs a Consul cluster though doesn't (yet) use it for DNS.
+This is an experimentthat creates a test environment subset in a VPC in AWS. The default region is ```us-west-2```. It creates three subnets DMZ, Public, Private and installs a bastion box in DMZ to allow access to the other subnets. It also installs a Consul cluster which is used as the DNS server for hosts within the VPC.
 
 ## Prerequisites
 
