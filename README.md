@@ -8,7 +8,7 @@ You must have an AWS account to use these instructions. Once you have one, creat
 
 Now install the ```awscli``` command line tools. On OS X that can be done by ```brew install awscli```. Once the tools are installed run
 
-```
+```sh
 $ aws configure
 AWS Access Key ID [None]: <YOUR ACCESS KEY>
 AWS Secret Access Key [None]: <YOUR SECRET KEY>
@@ -22,7 +22,7 @@ Now install terraform (0.3.1 or later) by downloading the right binaries from ht
 
 To get started first create an empty directory to act as the working directory, change to it, and then initialise terraform with this module:
 
-```
+```sh
 $ terraform init https://github.com/deverton/terraform-aws-consul.git
 ```
 
@@ -38,27 +38,37 @@ Populate the above values with your AWS IAM keys you saved earlier and the CIDR 
 
 To allow SSH access to the test VPC you must import your public key in to EC2.
 
-```
+```sh
 $ aws ec2 import-key-pair --public-key-material file://~/.ssh/id_rsa.pub --key-name terraform
 ```
 
 You should then be able to apply the module. Note that this may cost you money (though not much at the moment).
 
-```
+```sh
 $ terraform apply
 ```
 
 Once you have an environment running you can SSH to the bastion server as follows. The -A argument enables agent forwarding which will allow you to SSH from the bastion host to other hosts without a password.
 
-```
+```sh
 $ ssh -A ec2-user@$(terraform output bastion)
 ```
 
-Note that it will take some time for the instances to actually start up and spawn the SSH service so you will get connection refused for a while, up to five minutes.
+Note that it will take some time for the instances to actually start up and spawn the SSH service so you will get connection refused for a while, up to five minutes. Once you've got on to the box, you can prove that Consul is being used for DNS by running dig. Your output should look something like this:
+
+```sh
+[ec2-user@ip-10-0-201-28 ~]$ dig consul.service.consul +noall +answer SRV
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.32.amzn1 <<>> consul.service.consul +noall +answer SRV
+;; global options: +cmd
+consul.service.consul.  0   IN  SRV 1 1 8300 ip-10-0-1-11.node.dc1.consul.
+consul.service.consul.  0   IN  SRV 1 1 8300 ip-10-0-1-12.node.dc1.consul.
+consul.service.consul.  0   IN  SRV 1 1 8300 ip-10-0-1-10.node.dc1.consul.
+```
 
 To destroy the environment do this:
 
-```
+```sh
 $ terraform plan -destroy -out=destroy.tfplan
 $ terraform apply destroy.tfplan
 ```
