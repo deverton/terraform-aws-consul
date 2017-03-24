@@ -21,7 +21,7 @@ variable "key_name" {
 }
 
 variable "key_path" {
-    descriptoin = "Path to your private key."
+    description = "Path to your private key."
     default = "~/.ssh/id_rsa"
 }
 
