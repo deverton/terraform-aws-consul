@@ -23,7 +23,7 @@ Now install terraform (0.3.1 or later) by downloading the right binaries from ht
 To get started first create an empty directory to act as the working directory, change to it, and then initialise terraform with this module:
 
 ```sh
-$ terraform init https://github.com/deverton/terraform-aws-consul.git
+$ terraform init github.com/deverton/terraform-aws-consul
 ```
 
 You will now need to create a file in this directory called ```terraform.tfvars``` with contents like this:
